@@ -9,7 +9,7 @@ services:
       target: dev
     depends_on:
       redis:
-        condition: service_healthy
+        condition: service_started
     healthcheck: 
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 15s
@@ -30,7 +30,7 @@ services:
     entrypoint: nodemon --inspect=0.0.0.0 server.js
     depends_on:
       db:
-        condition: service_healthy 
+        condition: service_started 
     volumes:
       - ./result:/usr/local/app
     ports:
@@ -45,14 +45,14 @@ services:
       context: ./worker
     depends_on:
       redis:
-        condition: service_healthy 
+        condition: service_started
       db:
-        condition: service_healthy 
+        condition: service_started
     networks:
       - back-tier
 
   redis:
-    image: redis:15-alpine
+    image: redis:8.2.1
     volumes:
       - "./healthchecks:/healthchecks"
     healthcheck:
@@ -62,7 +62,7 @@ services:
       - back-tier
 
   db:
-    image: postgres:15-alpine
+    image: postgres:17
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
